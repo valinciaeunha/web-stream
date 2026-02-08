@@ -43,7 +43,7 @@ export default function VideoPage({ params }: PageProps) {
         }
     };
 
-    const simulateAd = async (event) => {
+    const simulateAd = async (event: string) => {
         if (!sessionId) return addLog("No Session ID");
         try {
             addLog(`Sending Ad Event: ${event}...`);
