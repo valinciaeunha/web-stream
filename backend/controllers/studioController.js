@@ -4,10 +4,13 @@ const jwt = require('jsonwebtoken');
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(`[Studio Login] Attempt for: ${email}`);
+
         const validEmail = process.env.ADMIN_EMAIL || 'admin@vinzhub.cloud';
         const validPassword = process.env.ADMIN_PASSWORD || 'vinzhub123';
 
         if (email === validEmail && password === validPassword) {
+            console.log(`[Studio Login] Success for: ${email}`);
             const token = jwt.sign({ role: 'admin' }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
 
             // Set as HttpOnly cookie for security
