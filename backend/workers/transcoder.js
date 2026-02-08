@@ -55,6 +55,9 @@ async function processVideo(job) {
                 .outputOptions([
                     '-hls_time 10',
                     '-hls_list_size 0',
+                    '-c:v libx264',
+                    '-c:a aac',
+                    '-pix_fmt yuv420p', // Compatibility for some players
                     '-f hls'
                 ])
                 .output(hlsOutputPath)
