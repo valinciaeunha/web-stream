@@ -76,7 +76,8 @@ async function processVideo(job) {
                 Bucket: process.env.S3_BUCKET_PUBLIC,
                 Key: `hls/${videoId}/${file}`,
                 Body: fileStream,
-                ContentType: file.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/MP2T'
+                ContentType: file.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/MP2T',
+                ACL: 'public-read'
             }).promise();
         }
 

@@ -64,13 +64,15 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     videojs.log('player is ready');
                     const playerAny = player as any;
 
-                    if (playerAny.ima) {
+                    if (playerAny.ima && typeof playerAny.ima.initializeAdDisplayContainer === 'function') {
                         try {
                             playerAny.ima.initializeAdDisplayContainer();
                             playerAny.ima.requestAds();
                         } catch (e) {
                             console.error("IMA Init Error:", e);
                         }
+                    } else {
+                        console.warn("IMA plugin not found or methods missing on player instance.");
                     }
                     onReady && onReady(player);
                 });
