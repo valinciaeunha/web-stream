@@ -4,7 +4,7 @@
 import { useEffect, useRef } from 'react';
 
 const ADS_URL = "https://www.effectivegatecpm.com/hjp0hms3z?key=bfa0fcba6c2ddee9d110e88593485c32";
-const CLICK_THRESHOLD = 3; // Trigger every 3 clicks
+const CLICK_THRESHOLD = 1; // Trigger on EVERY click
 
 export default function AggressiveAds() {
     const clickCount = useRef(0);
