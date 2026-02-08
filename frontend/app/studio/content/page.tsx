@@ -8,10 +8,13 @@ import {
     Copy,
     Trash2,
     Plus,
-    MoreHorizontal,
     Search,
     Filter,
-    Download
+    Download,
+    Play,
+    Info,
+    ArrowUpRight,
+    Sparkles
 } from 'lucide-react';
 import {
     Table,
@@ -24,7 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -56,7 +59,7 @@ export default function ContentPage() {
             }
         } catch (err) {
             console.error(err);
-            toast.error("Failed to load content");
+            toast.error("Network synchronization failed", { description: "Could not retrieve asset data." });
         } finally {
             setLoading(false);
         }
@@ -66,11 +69,14 @@ export default function ContentPage() {
         const urlPart = window.location.origin;
         const code = `<iframe src="${urlPart}/e/${id}" width="640" height="360" frameborder="0" allowfullscreen></iframe>`;
         navigator.clipboard.writeText(code);
-        toast.success("Embed Code Copied", { description: "You can now paste it into your website." });
+        toast.success("Code Captured", {
+            description: "Embed snippet copied to clipboard.",
+            style: { background: '#111', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }
+        });
     };
 
     const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this video?')) return;
+        if (!confirm('Permanent Deletion: Are you sure you want to remove this asset?')) return;
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         try {
@@ -81,10 +87,10 @@ export default function ContentPage() {
 
             if (res.ok) {
                 setVideos(videos.filter(v => v.id !== id));
-                toast.success("Video Deleted", { description: "The content was removed successfully." });
+                toast.success("Asset Purged", { description: "The content was successfully removed from the network." });
             }
         } catch (err) {
-            toast.error("Deletion failed");
+            toast.error("Operation failed");
         }
     };
 
@@ -95,15 +101,18 @@ export default function ContentPage() {
 
     if (loading) {
         return (
-            <div className="space-y-8 animate-in fade-in duration-500">
-                <div className="flex justify-between items-center">
-                    <Skeleton className="h-10 w-48 bg-white/5" />
-                    <Skeleton className="h-10 w-32 bg-white/5" />
+            <div className="space-y-12 animate-in fade-in duration-700">
+                <div className="flex justify-between items-end px-2">
+                    <div className="space-y-3">
+                        <Skeleton className="h-12 w-64 bg-white/5 rounded-2xl" />
+                        <Skeleton className="h-5 w-80 bg-white/5 rounded-xl" />
+                    </div>
+                    <Skeleton className="h-12 w-40 bg-white/5 rounded-2xl" />
                 </div>
-                <Card className="bg-[#111] border-white/5">
+                <Card className="bg-zinc-950/40 backdrop-blur-3xl border-white/5 rounded-[2.5rem] overflow-hidden">
                     <CardContent className="p-0">
-                        <div className="space-y-4 p-8">
-                            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 w-full bg-white/5 rounded-xl" />)}
+                        <div className="space-y-6 p-10">
+                            {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-20 w-full bg-white/5 rounded-2xl" />)}
                         </div>
                     </CardContent>
                 </Card>
@@ -112,95 +121,106 @@ export default function ContentPage() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
-                        Channel Content
-                        <Badge variant="outline" className="text-[10px] font-black uppercase text-blue-500 border-blue-500/20 bg-blue-500/5">
-                            {videos.length} Total
-                        </Badge>
-                    </h1>
-                    <p className="text-gray-500 font-medium">Manage and distribute your high-performance video assets.</p>
+        <div className="space-y-16 animate-in fade-in duration-1000 slide-in-from-bottom-6">
+
+            {/* Mesh Surface Decoration */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
+
+            <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 px-2">
+                <div className="space-y-4">
+                    <Badge variant="outline" className="text-[10px] font-heading font-black uppercase text-primary border-primary/20 bg-primary/5 px-3 py-1 rounded-full">
+                        <Layers size={12} className="mr-2" /> Asset Library
+                    </Badge>
+                    <h1 className="text-5xl font-heading font-black text-white tracking-tighter leading-none italic uppercase">Creative Ingestion</h1>
+                    <p className="text-zinc-500 font-medium text-lg leading-relaxed max-w-2xl">Manage your digital distribution pipeline with high-precision control and real-time status tracking.</p>
                 </div>
-                <div className="flex items-center gap-3">
-                    <Button variant="outline" className="bg-white/5 border-white/5 text-gray-400 hover:text-white transition-all h-11 rounded-xl">
-                        <Download className="w-4 h-4 mr-2" /> Export
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" className="bg-zinc-900/50 border-white/5 text-zinc-400 hover:text-white transition-all h-14 rounded-2xl px-6 group">
+                        <Download className="w-5 h-5 mr-3 group-hover:translate-y-0.5 transition-transform" /> Export Data
                     </Button>
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white font-black h-11 px-6 rounded-xl shadow-lg shadow-blue-600/20 active:scale-95 transition-all">
-                        <Plus className="w-5 h-5 mr-2" /> Upload New
+                    <Button className="bg-primary hover:bg-primary/90 text-white font-heading font-black h-14 px-8 rounded-2xl shadow-[0_12px_24px_-8px_rgba(var(--primary),0.3)] hover:shadow-primary/40 active:scale-95 transition-all text-xs uppercase tracking-[0.2em] group">
+                        <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-500" /> Ingest New Asset
                     </Button>
                 </div>
             </header>
 
-            <Card className="bg-[#111] border-white/5 overflow-hidden rounded-3xl shadow-2xl">
-                <CardHeader className="p-6 border-b border-white/5 bg-black/20">
-                    <div className="flex flex-col md:flex-row gap-4 justify-between">
-                        <div className="relative max-w-sm w-full group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-blue-500 transition-colors" />
+            <Card className="bg-zinc-950/40 backdrop-blur-3xl border-white/5 overflow-hidden rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.6)] border-t-white/10 group">
+                <CardHeader className="p-10 border-b border-white/5 bg-black/40">
+                    <div className="flex flex-col md:flex-row gap-6 justify-between items-center">
+                        <div className="relative max-w-md w-full group/search">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-zinc-700 group-focus-within/search:text-primary transition-colors duration-500" />
                             <Input
-                                placeholder="Search videos..."
-                                className="bg-black/40 border-white/5 rounded-xl pl-10 h-11 focus:ring-0 focus:border-blue-500/50"
+                                placeholder="Search inventory..."
+                                className="bg-black/40 border-white/5 rounded-2xl pl-12 h-14 focus:ring-0 focus:border-primary/40 focus:bg-black/60 transition-all duration-500 text-sm font-semibold placeholder:text-zinc-800"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" className="text-gray-400 hover:text-white hover:bg-white/5">
-                                <Filter className="w-4 h-4 mr-2" /> Filter
+                        <div className="flex items-center gap-3">
+                            <Button variant="ghost" className="text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl px-5 h-12 font-heading font-bold uppercase tracking-widest text-[10px]">
+                                <Filter className="w-4 h-4 mr-3" /> Advanced Filters
                             </Button>
+                            <div className="w-[1px] h-6 bg-white/5 mx-2" />
+                            <p className="text-[10px] font-heading font-black text-zinc-600 uppercase tracking-[0.3em]">
+                                Showing <span className="text-white">{filteredVideos.length}</span> Assets
+                            </p>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto custom-scrollbar">
                         <Table>
-                            <TableHeader className="bg-white/[0.02]">
-                                <TableRow className="border-white/5 hover:bg-transparent uppercase text-[10px] font-black tracking-widest text-gray-600">
-                                    <TableHead className="w-[400px] h-14 pl-8">Video Details</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Date Added</TableHead>
-                                    <TableHead className="text-right pr-8">Actions</TableHead>
+                            <TableHeader className="bg-white/[0.01]">
+                                <TableRow className="border-white/5 hover:bg-transparent uppercase text-[10px] font-heading font-black tracking-[0.25em] text-zinc-600">
+                                    <TableHead className="w-[450px] h-16 pl-10">Primary Descriptor</TableHead>
+                                    <TableHead>Deployment Status</TableHead>
+                                    <TableHead>Ingestion Date</TableHead>
+                                    <TableHead className="text-right pr-10">Control Layer</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {filteredVideos.map((video) => (
-                                    <TableRow key={video.id} className="border-white/5 hover:bg-white/[0.03] transition-all group">
-                                        <TableCell className="pl-8 py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/5 group-hover:bg-blue-600/10 group-hover:border-blue-500/20 transition-all">
-                                                    <VideoIcon className="w-6 h-6 text-gray-600 group-hover:text-blue-500" />
+                                {filteredVideos.map((video, idx) => (
+                                    <TableRow key={video.id} className="border-white/5 hover:bg-white/[0.03] transition-all duration-500 group/row animate-in slide-in-from-left-8" style={{ animationDelay: `${idx * 50}ms` }}>
+                                        <TableCell className="pl-10 py-7">
+                                            <div className="flex items-center gap-5">
+                                                <div className="w-14 h-14 bg-zinc-900 rounded-[1.25rem] flex items-center justify-center border border-white/5 group-hover/row:bg-primary/5 group-hover/row:border-primary/30 transition-all duration-700 shadow-2xl relative">
+                                                    <VideoIcon className="w-6 h-6 text-zinc-700 group-hover/row:text-primary transition-colors" />
+                                                    <div className="absolute inset-0 bg-primary/5 blur-lg opacity-0 group-hover/row:opacity-100 transition-opacity" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <p className="font-bold text-white text-sm truncate max-w-[300px]">{video.original_name}</p>
-                                                    <p className="text-[10px] text-gray-600 font-black uppercase tracking-tighter mt-1">{video.id}</p>
+                                                    <p className="font-heading font-bold text-white text-base truncate max-w-[320px] group-hover/row:text-primary transition-colors italic">{video.original_name}</p>
+                                                    <code className="text-[9px] text-zinc-600 font-bold uppercase tracking-tight mt-1.5 block group-hover/row:text-zinc-500 transition-colors">OSV-ID: {video.id}</code>
                                                 </div>
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             <Badge
-                                                className={`uppercase text-[9px] font-black tracking-widest px-3 py-1 rounded-full ${video.status === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                        video.status === 'processing' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-                                                            'bg-red-500/10 text-red-500 border-red-500/20'
+                                                className={`uppercase text-[9px] font-heading font-black tracking-[0.15em] px-4 py-1.5 rounded-full border border-current bg-transparent ${video.status === 'completed' ? 'text-emerald-500' :
+                                                        video.status === 'processing' ? 'text-amber-500 animate-pulse' :
+                                                            'text-rose-500'
                                                     }`}
                                                 variant="outline"
                                             >
+                                                <div className={`w-1.5 h-1.5 rounded-full mr-2 ${video.status === 'completed' ? 'bg-emerald-500' :
+                                                        video.status === 'processing' ? 'bg-amber-500' :
+                                                            'bg-rose-500'
+                                                    }`} />
                                                 {video.status}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="text-xs font-bold text-gray-500">
-                                            {new Date(video.created_at).toLocaleDateString()}
+                                        <TableCell className="text-xs font-heading font-bold text-zinc-500 italic">
+                                            {new Date(video.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                                         </TableCell>
-                                        <TableCell className="text-right pr-8">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Button size="icon" variant="ghost" asChild className="text-gray-500 hover:text-white hover:bg-white/5 rounded-lg active:scale-95">
-                                                    <a href={`/f/${video.id}`} target="_blank"><ExternalLink className="w-4 h-4" /></a>
+                                        <TableCell className="text-right pr-10">
+                                            <div className="flex items-center justify-end gap-3 opacity-40 group-hover/row:opacity-100 transition-opacity duration-500">
+                                                <Button size="icon" variant="ghost" asChild className="h-10 w-10 text-zinc-500 hover:text-white hover:bg-white/5 rounded-xl border border-transparent hover:border-white/5 active:scale-95 transition-all">
+                                                    <a href={`/f/${video.id}`} target="_blank"><ExternalLink className="w-4.5 h-4.5" /></a>
                                                 </Button>
-                                                <Button size="sm" onClick={() => copyEmbed(video.id)} className="bg-white/5 hover:bg-blue-600 text-gray-400 hover:text-white border border-white/5 rounded-xl active:scale-95 px-4">
-                                                    <Copy className="w-3.5 h-3.5 mr-2" /> Embed
+                                                <Button size="sm" onClick={() => copyEmbed(video.id)} className="bg-white/5 hover:bg-primary text-zinc-400 hover:text-white border border-white/5 rounded-xl h-10 px-5 font-heading font-bold text-[10px] uppercase tracking-widest active:scale-95 transition-all">
+                                                    <Copy className="w-3.5 h-3.5 mr-2.5" /> Deploy Code
                                                 </Button>
-                                                <Button size="icon" variant="ghost" onClick={() => handleDelete(video.id)} className="text-gray-700 hover:text-red-500 hover:bg-red-500/10 rounded-lg active:scale-95">
-                                                    <Trash2 className="w-4 h-4" />
+                                                <Button size="icon" variant="ghost" onClick={() => handleDelete(video.id)} className="h-10 w-10 text-zinc-700 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl border border-transparent hover:border-rose-500/10 active:scale-95 transition-all">
+                                                    <Trash2 className="w-4.5 h-4.5" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -210,13 +230,24 @@ export default function ContentPage() {
                         </Table>
                     </div>
                     {filteredVideos.length === 0 && (
-                        <div className="text-center py-24">
-                            <VideoIcon className="w-16 h-16 text-gray-800 mx-auto mb-6" />
-                            <p className="text-gray-600 font-bold uppercase tracking-widest text-sm">No videos matching your search</p>
+                        <div className="text-center py-40 bg-black/5 animate-in fade-in zoom-in duration-1000">
+                            <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center mx-auto mb-8 border border-white/5">
+                                <VideoIcon className="w-10 h-10 text-zinc-900" />
+                            </div>
+                            <h3 className="text-zinc-600 font-heading font-black uppercase tracking-[0.5em] text-xs">No assets detected</h3>
+                            <p className="text-zinc-700 text-[10px] mt-4 font-bold uppercase tracking-widest">Awaiting central synchronization...</p>
                         </div>
                     )}
                 </CardContent>
             </Card>
+
+            <footer className="flex items-center justify-center py-6 opacity-30">
+                <div className="flex items-center gap-4 text-[10px] font-heading font-black text-zinc-600 uppercase tracking-[0.4em]">
+                    <Sparkles size={14} className="text-primary/60" />
+                    End of Library
+                    <div className="w-12 h-[1px] bg-zinc-800" />
+                </div>
+            </footer>
         </div>
     );
 }
