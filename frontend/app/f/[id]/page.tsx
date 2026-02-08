@@ -5,17 +5,21 @@ import dynamic from 'next/dynamic';
 
 const VideoPlayer = dynamic(() => import('../../../components/VideoPlayer'), { ssr: false });
 
-export default function VideoPage({ params }) {
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
+
+export default function VideoPage({ params }: PageProps) {
     // Ungwrap params using React.use()
     const { id } = use(params);
 
-    const [sessionId, setSessionId] = useState(null);
+    const [sessionId, setSessionId] = useState<string | null>(null);
     const [adStatus, setAdStatus] = useState<string>('init');
     const [manifestUrl, setManifestUrl] = useState<string | null>(null);
     const [isAdBlocked, setIsAdBlocked] = useState(false);
-    const [logs, setLogs] = useState([]);
+    const [logs, setLogs] = useState<string[]>([]);
 
-    const addLog = (msg) => setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
+    const addLog = (msg: string) => setLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${msg}`]);
 
     const handleAdBlockDetected = () => {
         setIsAdBlocked(true);
