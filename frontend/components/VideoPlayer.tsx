@@ -8,6 +8,11 @@ import 'videojs-contrib-ads';
 import 'videojs-ima';
 import 'videojs-ima/dist/videojs.ima.css';
 
+// 0. Ensure videojs is global for plugins
+if (typeof window !== 'undefined') {
+    (window as any).videojs = videojs;
+}
+
 interface VideoPlayerProps {
     src: string;
     adTagUrl?: string; // Optional VAST URL
@@ -54,10 +59,6 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     }]
                 });
 
-                // Ensure the video-js element has a height
-                videoElement.style.width = '100%';
-                videoElement.style.height = '100%';
-
                 const imaOptions = {
                     adTagUrl: adTagUrl || 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=',
                     showControlsForAds: true,
@@ -68,18 +69,23 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     videojs.log('player is ready');
                     const playerAny = player as any;
 
-                    // Initialize IMA plugin explicitly
-                    if (typeof playerAny.ima === 'function') {
-                        try {
-                            playerAny.ima(imaOptions);
-                            playerAny.ima.initializeAdDisplayContainer();
-                            playerAny.ima.requestAds();
-                        } catch (e) {
-                            console.error("IMA Init Error:", e);
+                    // Initialize IMA plugin explicitly with a slight delay to ensure player is attached
+                    setTimeout(() => {
+                        if (typeof playerAny.ima === 'function') {
+                            try {
+                                playerAny.ima(imaOptions);
+                                // Don't call requestAds here if you want it to be handled by the plugin's auto-logic
+                                // or ensure container is ready.
+                                playerAny.ima.initializeAdDisplayContainer();
+                                playerAny.ima.requestAds();
+                            } catch (e) {
+                                console.error("IMA Init Error:", e);
+                            }
+                        } else {
+                            console.warn("IMA plugin not found on player instance.");
                         }
-                    } else {
-                        console.warn("IMA plugin not found on player instance.");
-                    }
+                    }, 100);
+
                     onReady && onReady(player);
                 });
             }
