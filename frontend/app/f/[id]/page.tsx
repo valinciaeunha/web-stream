@@ -142,11 +142,28 @@ export default function VideoPage({ params }: PageProps) {
                     {manifestUrl && (
                         <div className="p-4 border rounded bg-green-50">
                             <h2 className="font-bold mb-2">3. Video Player (Unlocked)</h2>
-                            <div className="aspect-video bg-black">
-                                <VideoPlayer
-                                    src={manifestUrl}
-                                    onAdBlockDetected={handleAdBlockDetected}
-                                />
+                            <div className="aspect-video bg-black relative flex items-center justify-center">
+                                {isAdBlocked ? (
+                                    <div className="absolute inset-0 bg-red-900/90 z-20 flex flex-col items-center justify-center text-white p-6 text-center">
+                                        <div className="text-4xl mb-4">🚫</div>
+                                        <h3 className="text-xl font-bold mb-2">AdBlock Detected</h3>
+                                        <p className="text-sm opacity-90">
+                                            Our video player requires ads to function. <br />
+                                            Please disable your AdBlocker and refresh the page to continue.
+                                        </p>
+                                        <button
+                                            onClick={() => window.location.reload()}
+                                            className="mt-6 px-6 py-2 bg-white text-red-900 font-bold rounded hover:bg-gray-100 transition-colors"
+                                        >
+                                            Refresh Page
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <VideoPlayer
+                                        src={manifestUrl}
+                                        onAdBlockDetected={handleAdBlockDetected}
+                                    />
+                                )}
                             </div>
                             <div className="mt-2 text-xs text-gray-500 break-all">
                                 Source: {manifestUrl}
