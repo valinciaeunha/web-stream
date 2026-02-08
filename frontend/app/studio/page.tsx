@@ -27,7 +27,9 @@ export default function DashboardPage() {
     const fetchVideos = async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         try {
-            const res = await fetch(`${apiUrl}/api/studio/videos`);
+            const res = await fetch(`${apiUrl}/api/studio/videos`, {
+                credentials: 'include'
+            });
             if (res.ok) {
                 const data = await res.json();
                 setVideos(data);

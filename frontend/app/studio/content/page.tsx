@@ -22,7 +22,9 @@ export default function ContentPage() {
     const fetchVideos = async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         try {
-            const res = await fetch(`${apiUrl}/api/studio/videos`);
+            const res = await fetch(`${apiUrl}/api/studio/videos`, {
+                credentials: 'include'
+            });
             if (res.ok) {
                 const data = await res.json();
                 setVideos(data);
@@ -46,7 +48,8 @@ export default function ContentPage() {
 
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         const res = await fetch(`${apiUrl}/api/studio/video/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
 
         if (res.ok) {
@@ -85,8 +88,8 @@ export default function ContentPage() {
                                         {new Date(video.created_at).toLocaleDateString()}
                                     </span>
                                     <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${video.status === 'completed' ? 'bg-green-500/10 text-green-500' :
-                                            video.status === 'processing' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
-                                                'bg-red-500/20 text-red-500'
+                                        video.status === 'processing' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
+                                            'bg-red-500/20 text-red-500'
                                         }`}>
                                         {video.status === 'completed' && <CheckCircle2 className="w-3 h-3" />}
                                         {video.status === 'processing' && <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />}

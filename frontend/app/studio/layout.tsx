@@ -27,7 +27,10 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
             try {
                 // We use GET /api/studio/videos as a challenge to check if the cookie works
-                const res = await fetch(`${apiUrl}/api/studio/videos`, { cache: 'no-store' });
+                const res = await fetch(`${apiUrl}/api/studio/videos`, {
+                    cache: 'no-store',
+                    credentials: 'include'
+                });
                 if (!res.ok && res.status === 401) {
                     router.push('/studio/login');
                 } else {
@@ -48,7 +51,10 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
 
     const handleLogout = async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        await fetch(`${apiUrl}/api/studio/logout`, { method: 'POST' });
+        await fetch(`${apiUrl}/api/studio/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
         router.push('/studio/login');
     };
 
@@ -92,8 +98,8 @@ export default function StudioLayout({ children }: { children: React.ReactNode }
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center p-3 rounded-xl transition-all group ${isActive
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 shrink-0 ${isActive ? '' : 'group-hover:text-blue-500'}`} />
