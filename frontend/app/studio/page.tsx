@@ -13,29 +13,36 @@ interface VideoData {
 
 export default function StudioPage() {
     const [videos, setVideos] = useState<VideoData[]>([]);
-    const [adminKey, setAdminKey] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const savedKey = localStorage.getItem('admin_key');
-        if (savedKey) {
-            setAdminKey(savedKey);
-            checkAuth(savedKey);
+        const savedAuth = localStorage.getItem('admin_auth');
+        if (savedAuth) {
+            const { email: savedEmail, password: savedPassword } = JSON.parse(savedAuth);
+            setEmail(savedEmail);
+            setPassword(savedPassword);
+            checkAuth(savedEmail, savedPassword);
         }
     }, []);
 
-    const checkAuth = async (key: string) => {
+    const checkAuth = async (e: string, p: string) => {
         setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studio/videos`, {
-                headers: { 'x-admin-key': key }
+            const res = await fetch(`${apiUrl}/api/studio/videos`, {
+                headers: {
+                    'x-admin-email': e,
+                    'x-admin-password': p
+                }
             });
             if (res.ok) {
                 const data = await res.json();
                 setVideos(data);
                 setIsAuthorized(true);
-                localStorage.setItem('admin_key', key);
+                localStorage.setItem('admin_auth', JSON.stringify({ email: e, password: p }));
             } else {
                 setIsAuthorized(false);
             }
@@ -55,9 +62,13 @@ export default function StudioPage() {
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this video?')) return;
 
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/studio/video/${id}`, {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const res = await fetch(`${apiUrl}/api/studio/video/${id}`, {
             method: 'DELETE',
-            headers: { 'x-admin-key': adminKey }
+            headers: {
+                'x-admin-email': email,
+                'x-admin-password': password
+            }
         });
 
         if (res.ok) {
@@ -75,18 +86,26 @@ export default function StudioPage() {
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold text-center mb-2">Vinz Studio</h1>
-                    <p className="text-gray-400 text-center mb-8 text-sm">Enter your Admin Key to manage videos</p>
+                    <p className="text-gray-400 text-center mb-8 text-sm">Enter your Admin credentials</p>
+
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Admin Email"
+                        className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 mb-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-sm"
+                    />
 
                     <input
                         type="password"
-                        value={adminKey}
-                        onChange={(e) => setAdminKey(e.target.value)}
-                        placeholder="Admin Security Key"
-                        className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 mb-4 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Admin Password"
+                        className="w-full bg-[#1a1a1a] border border-white/10 rounded-xl px-4 py-3 mb-6 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all text-sm"
                     />
 
                     <button
-                        onClick={() => checkAuth(adminKey)}
+                        onClick={() => checkAuth(email, password)}
                         disabled={loading}
                         className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl transition-all"
                     >
@@ -130,8 +149,8 @@ export default function StudioPage() {
                                     <div className="flex items-center gap-3 mt-1">
                                         <span className="text-xs text-gray-500">{new Date(video.created_at).toLocaleDateString()}</span>
                                         <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${video.status === 'completed' ? 'bg-green-500/10 text-green-500' :
-                                                video.status === 'processing' ? 'bg-yellow-500/10 text-yellow-500' :
-                                                    'bg-red-500/10 text-red-500'
+                                            video.status === 'processing' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                'bg-red-500/10 text-red-500'
                                             }`}>
                                             {video.status}
                                         </span>
