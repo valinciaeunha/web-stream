@@ -69,20 +69,23 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     videojs.log('player is ready');
                     const playerAny = player as any;
 
-                    // Initialize IMA plugin explicitly with a slight delay to ensure player is attached
+                    // Initialize IMA plugin explicitly with a slight delay
                     setTimeout(() => {
                         if (typeof playerAny.ima === 'function') {
                             try {
                                 playerAny.ima(imaOptions);
-                                // Don't call requestAds here if you want it to be handled by the plugin's auto-logic
-                                // or ensure container is ready.
-                                playerAny.ima.initializeAdDisplayContainer();
-                                playerAny.ima.requestAds();
+                                // The plugin handles most of it, but we can call init container on ready
+                                if (playerAny.ima.initializeAdDisplayContainer) {
+                                    playerAny.ima.initializeAdDisplayContainer();
+                                    // requestAds is usually automatic if adTagUrl is set, 
+                                    // but we can call it if the plugin hasn't triggered it yet.
+                                    if (typeof playerAny.ima.requestAds === 'function') {
+                                        playerAny.ima.requestAds();
+                                    }
+                                }
                             } catch (e) {
                                 console.error("IMA Init Error:", e);
                             }
-                        } else {
-                            console.warn("IMA plugin not found on player instance.");
                         }
                     }, 100);
 
