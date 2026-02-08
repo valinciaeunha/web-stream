@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 
 const VideoPlayer = dynamic(() => import('../../../components/VideoPlayer'), { ssr: false });
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
 interface PageProps {
     params: Promise<{ id: string }>;
 }
@@ -28,7 +30,7 @@ export default function VideoPage({ params }: PageProps) {
     const initSession = async () => {
         try {
             addLog("Initializing Session...");
-            const res = await fetch('http://localhost:5000/api/session/init', { method: 'POST' });
+            const res = await fetch(`${API_URL}/api/session/init`, { method: 'POST' });
             const data = await res.json();
             if (data.session_id) {
                 setSessionId(data.session_id);
@@ -36,7 +38,7 @@ export default function VideoPage({ params }: PageProps) {
             } else {
                 addLog("Session Init Failed");
             }
-        } catch (e) {
+        } catch (e: any) {
             addLog(`Error: ${e.message}`);
         }
     };
@@ -45,7 +47,7 @@ export default function VideoPage({ params }: PageProps) {
         if (!sessionId) return addLog("No Session ID");
         try {
             addLog(`Sending Ad Event: ${event}...`);
-            const res = await fetch('http://localhost:5000/api/ads/event', {
+            const res = await fetch(`${API_URL}/api/ads/event`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ session_id: sessionId, event })
@@ -53,7 +55,7 @@ export default function VideoPage({ params }: PageProps) {
             const data = await res.json();
             setAdStatus(data.current_status || 'error');
             addLog(`Ad Status: ${data.current_status}`);
-        } catch (e) {
+        } catch (e: any) {
             addLog(`Error: ${e.message}`);
         }
     };
@@ -62,7 +64,7 @@ export default function VideoPage({ params }: PageProps) {
         if (!sessionId) return addLog("No Session ID");
         try {
             addLog("Requesting Video Manifest...");
-            const res = await fetch(`http://localhost:5000/api/video/${id}/manifest?session_id=${sessionId}`);
+            const res = await fetch(`${API_URL}/api/video/${id}/manifest?session_id=${sessionId}`);
 
             if (res.status === 403) {
                 const data = await res.json();
@@ -74,7 +76,7 @@ export default function VideoPage({ params }: PageProps) {
             } else {
                 addLog(`Error: ${res.statusText}`);
             }
-        } catch (e) {
+        } catch (e: any) {
             addLog(`Error: ${e.message}`);
         }
     };
