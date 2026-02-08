@@ -54,6 +54,10 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     }]
                 });
 
+                // Ensure the video-js element has a height
+                videoElement.style.width = '100%';
+                videoElement.style.height = '100%';
+
                 const imaOptions = {
                     adTagUrl: adTagUrl || 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=',
                     showControlsForAds: true,
@@ -98,8 +102,8 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
     }, []);
 
     return (
-        <div data-vjs-player>
-            <div ref={videoRef} />
+        <div data-vjs-player className="w-full aspect-video min-h-[300px] bg-black rounded-lg overflow-hidden shadow-2xl border border-white/10">
+            <div ref={videoRef} className="w-full h-full" />
         </div>
     );
 }
