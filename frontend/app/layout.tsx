@@ -25,14 +25,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          src="https://pl28677497.effectivegatecpm.com/96/f8/e8/96f8e83dbaf40b8de1eb784259f818ba.js"
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <Script
-          src="https://pl28677497.effectivegatecpm.com/96/f8/e8/96f8e83dbaf40b8de1eb784259f818ba.js"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );
