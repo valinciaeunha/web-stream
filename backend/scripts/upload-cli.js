@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 // No external dependencies for HTTP requests in Node 20+
 
-const API_URL = 'http://localhost:5000/api/video';
+const API_URL = process.env.API_URL || 'http://localhost:5000/api/video';
 
 async function uploadVideo(inputPath) {
     // Handle potential URL-encoded paths if user pasted from browser
