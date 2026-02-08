@@ -13,6 +13,7 @@
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "lucide-react": "^0.474.0",
     "video.js": "^8.23.6",
     "videojs-contrib-ads": "^7.5.2",
     "videojs-ima": "^2.6.0"

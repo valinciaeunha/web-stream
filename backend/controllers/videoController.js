@@ -1,4 +1,5 @@
 const redisClient = require('../config/redis');
+const pool = require('../config/db');
 
 exports.getManifest = async (req, res) => {
     try {
@@ -72,7 +73,11 @@ exports.uploadVideo = async (req, res) => {
 
         const uploadUrl = await s3.getSignedUrlPromise('putObject', params);
 
-        // TODO: Save video metadata to DB with status 'PENDING_UPLOAD' and ID: videoId
+        // Save video metadata to DB
+        await pool.query(
+            'INSERT INTO videos (id, original_name, filename, status) VALUES ($1, $2, $3, $4)',
+            [videoId, filename, key, 'pending']
+        );
 
         res.json({
             upload_url: uploadUrl,
@@ -91,7 +96,11 @@ exports.completeUpload = async (req, res) => {
     try {
         const { videoId, key } = req.body;
 
-        // TODO: Update DB status to 'PROCESSING'
+        // Update DB status to 'processing'
+        await pool.query(
+            'UPDATE videos SET status = $1, updated_at = NOW() WHERE id = $2',
+            ['processing', videoId]
+        );
 
         // Push to Redis Queue
         const jobData = JSON.stringify({ videoId, key });

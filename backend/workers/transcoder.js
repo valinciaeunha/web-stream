@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const s3 = require('../config/s3'); // Use shared config
+const pool = require('../config/db');
 
 // Set FFmpeg Path
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -82,11 +83,19 @@ async function processVideo(job) {
         }
 
         console.log(`Job ${videoId} Completed.`);
-        // TODO: Update DB Status to READY
+        // Update DB Status to completed
+        await pool.query(
+            'UPDATE videos SET status = $1, updated_at = NOW() WHERE id = $2',
+            ['completed', videoId]
+        );
 
     } catch (err) {
         console.error(`Job ${videoId} Failed:`, err);
-        // TODO: Update DB Status to FAILED
+        // Update DB Status to failed
+        await pool.query(
+            'UPDATE videos SET status = $1, updated_at = NOW() WHERE id = $2',
+            ['failed', videoId]
+        );
     } finally {
         // Cleanup
         fs.rmSync(workDir, { recursive: true, force: true });
