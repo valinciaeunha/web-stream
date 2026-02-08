@@ -51,28 +51,30 @@ export const VideoPlayer = ({ src, adTagUrl, onReady, onAdBlockDetected }: Video
                     sources: [{
                         src: src,
                         type: 'application/x-mpegURL'
-                    }],
-                    // @ts-ignore
-                    ima: {
-                        adTagUrl: adTagUrl || 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=',
-                        showControlsForAds: true,
-                        debug: true
-                    }
+                    }]
                 });
+
+                const imaOptions = {
+                    adTagUrl: adTagUrl || 'https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=',
+                    showControlsForAds: true,
+                    debug: true
+                };
 
                 player.ready(() => {
                     videojs.log('player is ready');
                     const playerAny = player as any;
 
-                    if (playerAny.ima && typeof playerAny.ima.initializeAdDisplayContainer === 'function') {
+                    // Initialize IMA plugin explicitly
+                    if (typeof playerAny.ima === 'function') {
                         try {
+                            playerAny.ima(imaOptions);
                             playerAny.ima.initializeAdDisplayContainer();
                             playerAny.ima.requestAds();
                         } catch (e) {
                             console.error("IMA Init Error:", e);
                         }
                     } else {
-                        console.warn("IMA plugin not found or methods missing on player instance.");
+                        console.warn("IMA plugin not found on player instance.");
                     }
                     onReady && onReady(player);
                 });
