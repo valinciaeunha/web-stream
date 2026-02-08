@@ -16,10 +16,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: always
-    env_file: .env.production
     environment:
       - NODE_ENV=production
-      - REDIS_HOST=redis
+      - REDIS_URL=redis://redis:6379
+      - PORT=5000
     depends_on:
       - redis
     ports:
@@ -34,10 +34,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     restart: always
-    env_file: .env.production
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://api.vinzhub.cloud # Ganti domain asli
+      - PORT=3000
+      - NEXT_PUBLIC_API_URL=http://192.168.0.30:5000
     ports:
       - "3000:3000"
     depends_on:
