@@ -20,6 +20,13 @@ services:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
       - PORT=5000
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_BUCKET_RAW=${S3_BUCKET_RAW}
+      - S3_BUCKET_PUBLIC=${S3_BUCKET_PUBLIC}
+      - CDN_DOMAIN=${CDN_DOMAIN}
     env_file: .env
     depends_on:
       - redis
@@ -39,6 +46,12 @@ services:
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_BUCKET_RAW=${S3_BUCKET_RAW}
+      - S3_BUCKET_PUBLIC=${S3_BUCKET_PUBLIC}
     env_file: .env
     depends_on:
       - redis
