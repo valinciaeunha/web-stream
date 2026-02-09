@@ -3,6 +3,7 @@ import { Outfit, Inter } from "next/font/google";
 import Script from "next/script";
 import AggressiveAds from "@/components/AggressiveAds";
 import ConditionalAdScript from "@/components/ConditionalAdScript";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -27,15 +28,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <ConditionalAdScript />
       </head>
       <body
         className={`${outfit.variable} ${inter.variable} antialiased font-inter`}
       >
-        <AggressiveAds />
-        {children}
+        <ThemeProvider defaultTheme="zed">
+          <AggressiveAds />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
