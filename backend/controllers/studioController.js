@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
       console.log(`[Studio Login] Success for: ${email}`);
       const token = jwt.sign(
         { role: "admin" },
-        process.env.JWT_SECRET || "secret",
+        process.env.JWT_SECRET || "vinzhub_super_secret_key_123",
         { expiresIn: "7d" },
       );
 
