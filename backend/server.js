@@ -9,15 +9,17 @@ const redisClient = require("./config/redis");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+app.set("trust proxy", 1); // Trust first proxy (Nginx/Cloudflare)
+
 // Middleware
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      return callback(null, true);
-    },
-    credentials: true,
-  }),
+    cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            return callback(null, true);
+        },
+        credentials: true,
+    }),
 );
 app.use(express.json());
 app.use(cookieParser());
@@ -36,12 +38,12 @@ app.use("/api/studio", studioRoutes);
 app.use("/api/folders", folderRoutes);
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date() });
+    res.json({ status: "ok", timestamp: new Date() });
 });
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
 module.exports = { app, pool, redisClient };

@@ -19,8 +19,8 @@ exports.login = async (req, res) => {
 
       res.cookie("admin_token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production", // Must be true if sameSite='none'
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // 'none' allows cross-site (api.domain -> domain)
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
